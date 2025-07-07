@@ -506,10 +506,12 @@ which refer to https://docs.python.org/3/library/logging.html#levels for more de
 Possible choices are basedpyright, pyright, pyright-background-analysis, jedi, python-ms, pylsp, and ruff."
   :type 'string)
 
-(defcustom lsp-bridge-python-multi-lsp-server "basedpyright_ruff"
+(defcustom  "basedpyright_ruff"
   "Default Multi LSP server for Python.
-Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysis_ruff, jedi_ruff, python-ms_ruff, and pylsp_ruff."
-  :type 'string)
+Possible choices are basedpyright_ruff, pyright_ruff, pyright-background-analysis_ruff, jedi_ruff, python-ms_ruff, and pylsp_ruff.
+If nil the server specified by lsp-bridge-python-lsp-server is used."
+  :type '(choice (string)
+                 (const nil)))
 
 (defcustom lsp-bridge-tex-lsp-server "texlab"
   "Default LSP server for (la)tex, you can choose `texlab', `digestif' or `ltex-ls'."
@@ -1060,6 +1062,7 @@ So we build this macro to restore postion after code format."
 
 (defun lsp-bridge--get-multi-lang-server-func (project-path filename)
   "Get lang server with project path, file path or file extension."
+  ;; (message (format "THROMER lsp-bridge--get-multi-lang-server-func %s" filename))
   (or (when lsp-bridge-get-multi-lang-server-by-project
         (funcall lsp-bridge-get-multi-lang-server-by-project project-path filename))
       (lsp-bridge-get-multi-lang-server-by-extension filename)
@@ -1131,6 +1134,8 @@ So we build this macro to restore postion after code format."
 (defun lsp-bridge-get-lang-server-by-extension (filename extension-list)
   "Get lang server for file extension."
   ;; Don't search from extension list if filename not include any extension name.
+  ;; (message (concat "THROMER lsp-bridge-get-lang-server-by-extension " filename))
+  ;; (message (format "THROMER lsp-bridge-get-lang-server-by-extension %s" extension-list))
   (when-let* ((dot-pos (cl-position ?. filename))
               (file-extension (when dot-pos
                                 (substring filename (1+ dot-pos) (length filename)))))
@@ -1141,6 +1146,7 @@ So we build this macro to restore postion after code format."
       ;; Search file extension if multi-extension not found in extension list.
       (unless langserver-info
         (setq langserver-info (lsp-bridge-find-langserver-info-by-extension (file-name-extension filename) extension-list)))
+      ;; (message (format "THROMER lsp-bridge-get-lang-server-by-extension langserver-info %s" langserver-info))
 
       ;; Pick up langserver info.
       (when langserver-info
@@ -1186,6 +1192,8 @@ So we build this macro to restore postion after code format."
   "Get lang server for file mode."
   (when-let* ((mode (lsp-brige-get-mode filename))
               (langserver-info (lsp-bridge-lang-server-by-mode mode lsp-bridge-multi-lang-server-mode-list)))
+    ;; (message (format "THROMER lsp-bridge-get-multi-lang-server-by-file-mode (filename=%s: info=%s)" filename langserver-info))
+    ;; (message (format "THROMER lsp-bridge-get-multi-lang-server-by-file-mode returns %s" (lsp-bridge-get-symbol-string-value (cdr langserver-info))))
     (lsp-bridge-get-symbol-string-value (cdr langserver-info))))
 
 (defun lsp-bridge-get-single-lang-server-by-file-mode (filename)

@@ -700,8 +700,10 @@ class LspBridge:
             get_from_path_dict(FILE_ACTION_DICT, filepath).completion_item_resolve(item_key, server_name)
 
     def open_file(self, filepath):
+        message_emacs(f"PY THROMER open_file({filepath})")
         project_path = get_project_path(filepath)
         multi_lang_server = get_emacs_func_result("get-multi-lang-server", project_path, filepath)
+        message_emacs(f"PY THROMER {multi_lang_server=}")
 
         # notify change workspace folder to copilot server
         if self.copilot.is_initialized:
@@ -709,6 +711,7 @@ class LspBridge:
 
         if os.path.splitext(filepath)[-1] == '.org':
             single_lang_server = get_emacs_func_result("get-single-lang-server", project_path, filepath)
+            message_emacs(f"PY THROMER {single_lang_server=}")
             lang_server_info = load_single_server_info(single_lang_server)
             #TODO support diagnostic
             lsp_server = self.create_lsp_server(filepath, project_path, lang_server_info, enable_diagnostics=False)
