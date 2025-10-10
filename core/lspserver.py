@@ -321,6 +321,8 @@ class LspServer:
         cwd = self.project_path
         if os.path.isfile(self.project_path): # single file
             cwd = os.path.dirname(self.project_path)
+        # THROMER HERE
+        message_emacs(f"THROMER popen command {self.server_info['command']} {cwd=}")
         self.lsp_subprocess = subprocess.Popen(self.server_info["command"],
                                                bufsize=DEFAULT_BUFFER_SIZE,
                                                stdin=PIPE,

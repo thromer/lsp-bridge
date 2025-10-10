@@ -701,6 +701,7 @@ class LspBridge:
 
     def open_file(self, filepath):
         project_path = get_project_path(filepath)
+        message_emacs(f"THROMER open_file {filepath=} {project_path=}")
         multi_lang_server = get_emacs_func_result("get-multi-lang-server", project_path, filepath)
 
         # notify change workspace folder to copilot server
@@ -788,6 +789,7 @@ class LspBridge:
             os.path.basename(project_path.rstrip(os.path.sep))))
 
     def load_single_lang_server(self, project_path, filepath):
+        message_emacs("THROMER load_single_lang_server")
         single_lang_server = get_emacs_func_result("get-single-lang-server", project_path, filepath)
 
         if not single_lang_server:
@@ -904,6 +906,7 @@ class LspBridge:
         return True
 
     def create_lsp_server(self, filepath, project_path, lang_server_info, enable_diagnostics=True):
+        message_emacs(f"THROMER create_lsp_server {filepath=} {project_path=} {lang_server_info=}")
         if not self.check_lang_server_command(lang_server_info, filepath):
             return False
 
@@ -1063,6 +1066,7 @@ def read_lang_server_info(lang_server_path):
     return lang_server_info
 
 def load_single_server_info(lang_server):
+    message_emacs("THROMER load_single_server_info")
     lang_server_info_path = ""
     if isinstance(lang_server, str) and os.path.exists(lang_server) and os.path.dirname(lang_server) != "":
         # If lang_server is real file path, we load the LSP server configuration from the user specified file.
